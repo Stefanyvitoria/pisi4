@@ -1,0 +1,10 @@
+Precisaremos de:
+
+1 - Criar uma API (FLASK)
+2 - Um IAM role com acesso full ao textraction
+3 - Um arquivo html para resposta
+
+
+Requesitos: 
+- biblioteca flask, boto3
+- 
