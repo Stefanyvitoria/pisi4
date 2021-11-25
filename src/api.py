@@ -3,9 +3,10 @@ from os import system
 from flask import Flask, request, render_template, send_file
 import boto3
 
-KEY_ID = "ASIAVF37VDXB7OSXSKB6"
-KEY_SECRET = "yST6qEvKExQ06mi1ANXY8zu83j2jtPHcwdbeCKGd"
-TOKEN = "FwoGZXIvYXdzELH//////////wEaDKSyWF9tGKyJkOd1qSLUAY0A8eJAgzjnLSWNqhQ7xA0g+LGsPgaObE0tSIlRXUkfPq5T747esykj7QI61ipAghC2R8vgDp+N2qPzX7AOiyRuT9mNOp8O6Pua7ZsyXLRHSISLNJsXmHwN1XoznSal0NVou/doG1N58TDfoksdCBHDpGdPz5WGt8LviaXjvhTWqZ+zRAwlQBqqqFdjaB4jc4p6A3+nQQrCQ49eoXhswIsiNJ3Glr3ycD6A5PM3ozs4Z2IK3XZtQ9nFRngFLfS+kYFQfbcFCxhkLaC+wdwKC1cp+03KKIKP+4wGMi2gof1mfcPXHaWEFCIGsPvz4IxjfSTUiduWSzeFeYX9mfnHNo9H4xzl7iDwcr8="
+KEY_ID = "ASIAVF37VDXB6VDQZF6K"
+KEY_SECRET = "cfC+zwbAPDIkcaXKHtu6PgM7t9bPE2vlwcvcVNv5"
+TOKEN = "FwoGZXIvYXdzELT//////////wEaDHDDakd+Npo7Il6PayLUAcZpo2hVbcx2FlMYVeM7dCiZAl/Cky63voEIivHmmp1GAICEyP6TeihnSsRROKCoy6M/4l2YL3lYnbc8joOslo7emgKDHzjfGpg443nMB9pg6wOFKnIcKXRR55XqybX6paNA+Uju0BkJ1inRNshqbn3BTlgCTkNfcXa1c7qryKLsxpKhyoDC7yrp9yACKff1bhvBBsk1HwBCk/wTSHcLBj4ZptDzYq3X0YASdPN9CNmexU40I/k8/OhdaHoBBprPPwzkIZw5vagkx6AXyFPMhURxsVQwKLz4+4wGMi3FX7EzfnKARVYhJXeqlW+laTy0C1M5Jb7bhN6Cf+kCYx3C24KMFm5LZ0lIKY8="
+
 textractcliente = boto3.client("textract", aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 s3client = boto3.client('s3', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 pollyclient = boto3.client('polly', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
@@ -78,12 +79,45 @@ def polly():
     return response['ResponseMetadata']['RequestId']
 
 
-@app.route('/teste', methods=["GET", "POST"])
-def teste():
-    file = request.get_json()
-    print(file)
-    return 'stefany'
+@app.route('/aws', methods=["GET", "POST"])
+def aws():
+    file = request.files.get("file")
+
+    #Extração do texto
+    binaryFile = file.read()
+    response = textractcliente.detect_document_text(
+        Document = {
+            "Bytes": binaryFile
+        }
+    )
+    text = ""
+    for block in response["Blocks"]:
+        if (block["BlockType"] == "LINE"):
+            text+= block["Text"]+' '
+    file = open('text.txt', mode='w')
+    file.write(text)
+    file.close()
+
+    #Armazenando o texto
+    response = s3client.upload_file('./text.txt', 'stefany-txt-bucket', 'texto-extraido.txt')
+
+    #Criando Audio
+    response = pollyclient.synthesize_speech(
+    OutputFormat='mp3',
+    Text=text,
+    VoiceId='Amy'
+    )
+
+    file = open("voice.mp3", 'wb')
+    file.write(response['AudioStream'].read())
+    file.close()
+
+    response = s3client.upload_file('./voice.mp3', 'stefany-polly-bucket', 'texto-falado.mp3')
+
+    return main()
 
 
 
 app.run("127.0.0.1", port="5000", debug=True)
+
+
