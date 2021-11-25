@@ -114,7 +114,7 @@ def aws():
 
     response = s3client.upload_file('./voice.mp3', 'stefany-polly-bucket', 'texto-falado.mp3')
 
-    return main()
+    return render_template('reproducao.html')
 
 
 
