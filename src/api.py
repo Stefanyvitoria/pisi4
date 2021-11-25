@@ -1,10 +1,11 @@
-from flask import Flask, request, render_template
+import io
+from os import system
+from flask import Flask, request, render_template, send_file
 import boto3
 
-KEY_ID = "ASIAVF37VDXB3QWEBSFA"
-KEY_SECRET = "iPVmVQznT1zXh7IMB4eULiXoEUMim9FlBGgFcpEs"
-TOKEN = "FwoGZXIvYXdzEJn//////////wEaDD3Ukzq5hVEnIK2jMyLUAeFLFjjRenH+7oKvWibeb/mdtRi9ZHTMsLTFsD3X5x50jXHXuxVUqwirCzsIY3kSGwEI1NoNldZ0f3XH2G7VAmshYf1Vlo9y29W+A6Am/K9hV7AgmrsGJ0UbjSG07a3TAMnN0JqVXnYY2vRs+VdvIaSEqJ2OxJ5DPXA4Cu2Ji98s+zkJ3taRausIw7ntAdTIElbsXHhAcbm6ZkJmW77zX3Wpc1Dq5e5dSysU+6uHGBWhTwoqSS5Qr0omknU/QwxtZ9rOlnUl33AFCTNyItC+eL5df9AzKIXp9YwGMi3j6doxyS4XPPVuNCqfVCAWBK/LZ/DwTPnHYct/71uhY8IEkMf+OPzqnsnGWYI="
-
+KEY_ID = "ASIAVF37VDXB7OSXSKB6"
+KEY_SECRET = "yST6qEvKExQ06mi1ANXY8zu83j2jtPHcwdbeCKGd"
+TOKEN = "FwoGZXIvYXdzELH//////////wEaDKSyWF9tGKyJkOd1qSLUAY0A8eJAgzjnLSWNqhQ7xA0g+LGsPgaObE0tSIlRXUkfPq5T747esykj7QI61ipAghC2R8vgDp+N2qPzX7AOiyRuT9mNOp8O6Pua7ZsyXLRHSISLNJsXmHwN1XoznSal0NVou/doG1N58TDfoksdCBHDpGdPz5WGt8LviaXjvhTWqZ+zRAwlQBqqqFdjaB4jc4p6A3+nQQrCQ49eoXhswIsiNJ3Glr3ycD6A5PM3ozs4Z2IK3XZtQ9nFRngFLfS+kYFQfbcFCxhkLaC+wdwKC1cp+03KKIKP+4wGMi2gof1mfcPXHaWEFCIGsPvz4IxjfSTUiduWSzeFeYX9mfnHNo9H4xzl7iDwcr8="
 textractcliente = boto3.client("textract", aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 s3client = boto3.client('s3', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 pollyclient = boto3.client('polly', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
@@ -13,10 +14,23 @@ pollyclient = boto3.client('polly', aws_access_key_id=KEY_ID, aws_secret_access_
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+
+@app.route('/logo', methods=["GET"])
+def logo():
+    return send_file('../assets/img/b_UFRPE.png', mimetype='image/png')
+
+@app.route('/css', methods=["GET", "POST"])
+def css():
+    return send_file('../assets/css/style.css', mimetype='text/css')
+
+@app.route('/js', methods=["GET", "POST"])
+def js():
+    return send_file('../assets/js/script.js', mimetype='text/js')
+
+
+@app.route("/", methods=["GET", "POST", "PUT"])
 def main():
-    name = 'World' if (request.args.get('name') == None) else request.args.get('name')
-    return f"Hello, {name}!"
+    return render_template('index.html')
 
 @app.route("/extract", methods=["POST"])
 def extractImage():
@@ -63,4 +77,13 @@ def polly():
     file.close()
     return response['ResponseMetadata']['RequestId']
 
-app.run("0.0.0.0", port="5000", debug=True)
+
+@app.route('/teste', methods=["GET", "POST"])
+def teste():
+    file = request.get_json()
+    print(file)
+    return 'stefany'
+
+
+
+app.run("127.0.0.1", port="5000", debug=True)

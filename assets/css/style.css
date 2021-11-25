@@ -38,6 +38,11 @@ body {
 
 .card-content{
     width: 100%;
+    max-width: 650px;
+}
+
+.historico{
+    margin-left: auto;
 }
 
 .card-content > div{
