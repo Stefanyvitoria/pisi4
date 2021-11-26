@@ -1,4 +1,3 @@
-import io
 from os import system
 from flask import Flask, request, render_template, send_file
 import boto3
@@ -20,7 +19,6 @@ class ObjFile():
 
 
 app = Flask(__name__)
-
 
 @app.route('/logo', methods=["GET"])
 def logo():
@@ -101,8 +99,9 @@ def aws():
     #Criando Audio
     response = pollyclient.synthesize_speech(
         OutputFormat='mp3',
+        LanguageCode='pt-BR',
         Text=text.txt,
-        VoiceId='Amy'
+        VoiceId='Camila'
     )
 
     #Armazenando o audio
