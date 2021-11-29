@@ -2,10 +2,9 @@ from os import system
 from flask import Flask, request, render_template, send_file
 import boto3
 
-KEY_ID = "ASIAVF37VDXBV4PUBLOJ"
-KEY_SECRET = "JBk//tklrsaaPGT/yZoHPOMqDEpOT/QsCnijAm1I"
-TOKEN = "FwoGZXIvYXdzEMv//////////wEaDGFxgrMUrKE228IDuiLUAbw4UK9yVpF7MJ7Q11zPQM0khbJos+RY8bWeQT+DnBztC4KCtyR1ME4v0vdyDfknY0MGvMYVtScHkIra9yIr9qMIenc9SJ+r4oxsdjI1jxgRGGii6bt7dLP5HO8rHzI5KTe5G9oKQDUxjvbTtKIdkbdmHCcznDr2wT5e90KOvZMVszdYDa6Vn9XKgka7ik2r12I2Tar4JeGnN3UeS6JUrGH2W/P/7j89ITYlEKOXN0OWX28J9ZKEdieLiV/RArmALfykbVatgjcOzTRFbJVfk91lTbmoKIr6gI0GMi2EAKKQKaPGqfjWWFYy/t06v4VyxeoftzXPPPQqu3LRNg4EB27vg1bEc033L54="
-
+KEY_ID = "ASIAVF37VDXBY5TYN3D3"
+KEY_SECRET = "v4umBtzqgVmWFLj+soqIyMVON7krN9yDaEDbgEED"
+TOKEN = "FwoGZXIvYXdzEBMaDBkENLpAt+5XYAwdISLUAUWN2cUjbYf3c5zXig8uLUgJCIf0G9r7hoy3Ir/gARt61X0rjKOAtKDTwYwxP+WPCZ+swSfEwXyNGN33Oa6MaHh7vT1gRSkS9c8MEvvm5M3a5nIMDkakgpfLDtsuT9eUGE451QiQ9Tgc/vzQ1tV6T+tYN+t5NlF7SwdCgHTuc22zKdZKio2C0u5CnHUUsaZxZtnvQTgqHz+SOVcwYrsU2eRYqzL8JwQEjtWlpRp9wv5m052OovCrnagq9uEsEAI8SsoejVB2E9qkItOZ2kIf2ctF2JamKJ/bkI0GMi3fdhGae31piPIJJwkN0XWBAXri3QtVdEp/gKjhRW4yY5MpewULH1MeQqKJaXI="
 textractcliente = boto3.client("textract", aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 s3client = boto3.client('s3', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 pollyclient = boto3.client('polly', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)

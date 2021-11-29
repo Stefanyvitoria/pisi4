@@ -84,3 +84,7 @@ body {
     background: rgba(0, 72, 114, 0.103);
 }
 
+.audio-modal{
+    display: flex;
+    justify-content: center;
+}
