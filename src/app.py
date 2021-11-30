@@ -1,10 +1,9 @@
-from os import system
 from flask import Flask, request, render_template, send_file
 import boto3
 
-KEY_ID = "ASIAVF37VDXBYJHETS7Q"
-KEY_SECRET = "mt13l9pmppHL6geIWOZeOApWwNSd3SCkE41glq0p"
-TOKEN = "FwoGZXIvYXdzEB4aDPSTRDrUq3a3yJbJuiLUARBFs5+fheNUQyq3ELmme1ZMUSus2LxSR2mxH3/f3wBfGM0yGOoGKGzMondrLCRyRP3raBwVi4jw9nlfnzm07UdHQ3oRsejeC0Pl5HdLKCDDQqNKhEXyVtcVWZSZD10pA6CRiMgBrF35TRQW8uClQdrupDrGq0sUDygx9XxdozI9aA2gEKQtYe3S6Rx5woXFrjy/etSksvU61Mdm4ApBSATpKAGEg5cw+oJGaQDpa0cYyc3v2fmAIbRZEehLGeMTYXbtyPHYlj9NKZbOpbAYV0BJ0i7eKNaHk40GMi1H//S/uQGTveR8Hs4GwK+R13NEBu19fThxYgyy1cYDZOVgjGzU0zWMW6Kx0Zk="
+KEY_ID = "ASIAVF37VDXBXGIWNWCK"
+KEY_SECRET = "xdZfpGcObC6mIocqj1/yy3zw7cZXsQz3zV2JmYLM"
+TOKEN = "FwoGZXIvYXdzEDYaDGCQXSLr8xJSf7hyVCLUAae1N4mMVLj6MljkSxpPtUn0jnj02nFrzMLDy/WJ7orqzJabixV6iS5hfjBAfPtMt+7pqKlCCJ+GpJ84WMt3KoWERsovQALqWbRzh0z6qAO/DSoTNo0c85LImLsTmGXim1Gtp9kSu2HOX6v9Eafs29UMV3S1dHAqwL3eRwcKC2F3Gm8nucAdjUomirCQW+R/GwOplP/T+M/MrvfUFjjegHLgcoGlvsX/ftp8xYhWwNi8caXMfgVgwzbYcMrWcirFwmKRLygMKIfjNkCpGJsk4kQdr2LdKLS+mI0GMi2X4HMhrNKfG8ny+ZGyqZR8i238I5BweufbG12vpbipzOxR6Gl86EB+dSN9HrM="
 
 textractcliente = boto3.client("textract", aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
 s3client = boto3.client('s3', aws_access_key_id=KEY_ID, aws_secret_access_key=KEY_SECRET, region_name="us-east-1", aws_session_token=TOKEN)
@@ -54,7 +53,7 @@ def extractImage():
     for block in response["Blocks"]:
         if (block["BlockType"] == "LINE"):
             text+= block["Text"]+' '
-    
+
     return text
 
 @app.route("/createbucket", methods=["POST"])
@@ -91,6 +90,17 @@ def voice():
     )
     return send_file(response['Body'], mimetype='audio/mp3')
 
+@app.route('/img', methods=["GET", "POST"])
+def img():
+    # Recuperando a imagem
+    response = s3client.get_object(
+        Bucket='stefany-img-bucket',
+        Key='img.png'
+    )
+    print(response['Body'].read())
+    return send_file(response['Body'], mimetype='image/png')
+
+
 @app.route('/aws', methods=["GET", "POST"])
 def aws():
     file = request.files.get("file")
@@ -105,7 +115,7 @@ def aws():
 
     #Armazenando o texto
     text = ObjFile(text)
-    response = s3client.upload_fileobj(text, 'stefany-txt-bucket', 'texto-extraido.txt')
+    s3client.upload_fileobj(text, 'stefany-txt-bucket', 'texto-extraido.txt')
 
     #Criando Audio
     response = pollyclient.synthesize_speech(
@@ -116,11 +126,11 @@ def aws():
     )
 
     #Armazenando o audio
-    response = s3client.upload_fileobj(response['AudioStream'], 'stefany-polly-bucket', 'texto-falado.mp3')
+    s3client.upload_fileobj(response['AudioStream'], 'stefany-polly-bucket', 'texto-falado.mp3')
+
     return render_template('reproducao.html')
 
 
-
-app.run("127.0.0.1", port="5000", debug=True)
+app.run("127.0.0.1", port="5000")
 
 
